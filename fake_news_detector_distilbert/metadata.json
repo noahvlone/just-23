@@ -1,0 +1,14 @@
+{
+  "model_type": "distilbert-base-uncased",
+  "num_labels": 2,
+  "id2label": {
+    "0": "FAKE",
+    "1": "REAL"
+  },
+  "label2id": {
+    "FAKE": 0,
+    "REAL": 1
+  },
+  "max_length": 512,
+  "timestamp": "2025-09-27T04:07:16.139507"
+}
