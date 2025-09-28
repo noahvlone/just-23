@@ -16,7 +16,7 @@ app = FastAPI(title="Fake News Detector API")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["http://82.197.71.171:4000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -231,4 +231,4 @@ def get_gemini_analysis(text, prediction, confidence):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="82.197.71.171", port=4000, reload=True)
