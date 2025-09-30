@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.deploy/
+.deploy*/ 
+.venv/
+venv/
+deploy/
+*.ipynb_checkpoints/
