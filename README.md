@@ -1,5 +1,3 @@
----
-
 ```markdown
 # 📰 Fake News Detector (DistilBERT + Gemini)
 
@@ -33,11 +31,11 @@ Frontend dibangun dengan **HTML/CSS/JavaScript**, Backend dengan **FastAPI**, da
 ## 📂 Struktur Project
 
 
-├── backend/                 # FastAPI backend (main.py, routers, model loading, LLM handler)
-├── frontend/                # HTML, CSS, JS (index.html, style, charts, chat UI)
-├── fake_news_detector_distilbert/  # Fine-tuned DistilBERT model (local folder)
-├── requirements.txt         # Python dependencies
-├── Dockerfile               # Build backend + frontend in one container
+├── backend/                 
+├── frontend/              
+├── fake_news_detector_distilbert/ 
+├── requirements.txt         
+├── Dockerfile               
 ├── README.md
 
 
