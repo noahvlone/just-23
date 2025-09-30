@@ -1,267 +1,180 @@
-# 🧠 Fake News Detector
+Oke bro, gue bikinin draft **README.md** buat GitHub repo lo. Ini udah format standar open source + gampang dibaca sama orang lain.
 
-Sistem deteksi berita palsu yang menggabungkan DistilBERT untuk prediksi cepat dan Google Gemini untuk analisis mendalam, dengan Supabase untuk penyimpanan data.
+---
+
+```markdown
+# 📰 Fake News Detector (DistilBERT + Gemini)
+
+Proyek ini adalah sistem deteksi berita palsu berbasis **Deep Learning** (DistilBERT) yang dikombinasikan dengan **Large Language Model (LLM) Gemini** untuk memberikan analisis lanjutan dan alasan klasifikasi.  
+Aplikasi sudah terintegrasi dengan **Supabase** untuk menyimpan riwayat prediksi, analisis, dan chat.  
+Frontend dibangun dengan **HTML/CSS/JavaScript**, Backend dengan **FastAPI**, dan deployment via **Docker**.
+
+---
 
 ## ✨ Fitur
+- **Deteksi Berita Palsu** menggunakan DistilBERT yang di-finetune.
+- **Analisis Lanjutan dengan LLM (Gemini)** → memberikan ringkasan, alasan klasifikasi, dan insight tambahan.
+- **Tanya LLM** → user bisa ngobrol/chat dengan AI soal hasil prediksi.
+- **Riwayat (History)** → semua sesi, prediksi, analisis, dan chat disimpan di **Supabase (PostgreSQL)**.
+- **Visualisasi** → confidence score, faktor LLM, chart bobot, dan riwayat analisis.
+- **Frontend Interaktif** → dark/light mode, dashboard responsif, history panel.
+- **Deployable** → dengan **Docker** jadi bisa jalan di server tanpa buka terminal terus.
 
-- **⚡ Prediksi Cepat**: Model DistilBERT untuk klasifikasi FAKE/REAL
-- **🧠 Analisis Mendalam**: AI Gemini untuk analisis faktor dan penjelasan
-- **💬 Chat Interaktif**: Tanya jawab tentang analisis
-- **📊 Visualisasi Data**: Chart.js untuk visualisasi faktor deteksi
-- **💾 Penyimpanan Data**: Integrasi Supabase untuk riwayat sesi
-- **🎨 UI Modern**: Desain responsif dengan dukungan tema gelap/terang
-- **📱 Mobile Friendly**: Berjalan lancar di desktop dan mobile
+---
 
-## 🏗️ Arsitektur
+## 🛠️ Tech Stack
+- **Backend**: FastAPI + Uvicorn
+- **Model**: HuggingFace DistilBERT (local fine-tuned model)
+- **LLM**: Google Gemini API
+- **Database**: Supabase (PostgreSQL)
+- **Frontend**: HTML + CSS + Vanilla JS + Chart.js
+- **Deployment**: Docker
 
+---
+
+## 📂 Struktur Project
 ```
-Frontend (HTML/CSS/JS) → FastAPI Backend → AI Models → Supabase Database
-     │                        │               │              │
-     ├── Chart.js             ├── DistilBERT  ├── Gemini     ├── Sessions
-     ├── Supabase Client      ├── CORS        └── Analysis   ├── Predictions
-     └── Responsive UI        └── Static Serving            └── Chats
-```
 
-## 🚀 Panduan Instalasi Cepat
+.
+├── backend/                 # FastAPI backend (main.py, routers, model loading, LLM handler)
+├── frontend/                # HTML, CSS, JS (index.html, style, charts, chat UI)
+├── fake_news_detector_distilbert/  # Fine-tuned DistilBERT model (local folder)
+├── requirements.txt         # Python dependencies
+├── Dockerfile               # Build backend + frontend in one container
+├── README.md
 
-### Prerequisites
+````
 
-- Python 3.8+
-- Akun Supabase
-- Google AI Studio API key
+---
 
-### 1. Setup Backend
+## ⚡ Cara Jalanin di Lokal
+
+### 1. Clone repo
+```bash
+git clone https://github.com/your-username/fnd-app.git
+cd fnd-app
+````
+
+### 2. Install dependency
 
 ```bash
-# Buat virtual environment
-python -m venv venv
-# Windows: venv\Scripts\activate
-source venv/bin/activate
-
-# Install dependencies
-pip install fastapi uvicorn transformers torch google-generativeai supabase python-multipart python-dotenv
+pip install -r requirements.txt
 ```
 
-### 2. Konfigurasi Environment
+### 3. Setup `.env`
 
 Buat file `.env`:
 
 ```env
-MODEL_PATH=fake_news_detector_distilbert
-GEMINI_API_KEY=your_gemini_api_key_here
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_KEY=your_supabase_anon_key_here
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-1.5-flash
+SUPABASE_URL=https://yourproject.supabase.co
+SUPABASE_KEY=your_supabase_anon_key
 ```
 
-### 3. Setup Database
-
-Jalankan SQL ini di Supabase SQL editor:
-
-```sql
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Sessions table
-CREATE TABLE sessions (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    title TEXT,
-    source_text TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
-);
-
--- Predictions table
-CREATE TABLE predictions (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
-    text TEXT,
-    label TEXT CHECK (label IN ('FAKE', 'REAL')),
-    score FLOAT,
-    model_version TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
-);
-
--- Analyses table
-CREATE TABLE analyses (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
-    summary TEXT,
-    factors JSONB,
-    chart JSONB,
-    tips TEXT[],
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
-);
-
--- Chats table
-CREATE TABLE chats (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
-    role TEXT CHECK (role IN ('user', 'assistant')),
-    message TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
-);
-
--- Create indexes
-CREATE INDEX idx_sessions_created_at ON sessions(created_at);
-CREATE INDEX idx_predictions_session_id ON predictions(session_id);
-CREATE INDEX idx_analyses_session_id ON analyses(session_id);
-CREATE INDEX idx_chats_session_id ON chats(session_id);
-```
-
-### 4. Setup Frontend
+### 4. Jalankan backend
 
 ```bash
-# Buat folder frontend
-mkdir -p frontend
-
-# Simpan index.html di folder frontend
-cp index.html frontend/
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 4000
 ```
 
-### 5. Jalankan Aplikasi
+### 5. Akses frontend
 
-```bash
-# Start server backend
-python main.py
-```
-
-Aplikasi akan tersedia di:
-- Frontend: http://localhost:4000
-- API Docs: http://localhost:4000/docs
-
-## 📁 Struktur Proyek
-
-```
-fake-news-detector/
-├── main.py                 # FastAPI backend
-├── requirements.txt        # Python dependencies
-├── .env                   # Environment variables
-├── README.md              # File ini
-└── frontend/
-    └── index.html         # Aplikasi frontend
-```
-
-## 🛠️ API Endpoints
-
-### Health Check
-- `GET /health` - Status service
-
-### Prediction
-- `POST /api/predict` - Klasifikasi berita sebagai FAKE/REAL
-```json
-{
-  "text": "Konten berita di sini..."
-}
-```
-
-### Analysis
-- `POST /api/analyze` - Dapatkan analisis detail dengan faktor
-```json
-{
-  "text": "Konten berita...",
-  "prediction": {
-    "label": "FAKE",
-    "score": 0.85
-  }
-}
-```
-
-### Chat
-- `POST /api/chat` - Tanya jawab interaktif tentang analisis
-```json
-{
-  "message": "Mengapa ini diklasifikasikan sebagai fake?",
-  "context": {
-    "prediction": {...},
-    "analysis": {...}
-  }
-}
-```
-
-## 🎯 Panduan Penggunaan
-
-1. **Input Teks Berita**: Paste atau ketik konten berita di text area
-2. **Dapatkan Prediksi**: Klik "Prediksi" untuk klasifikasi DistilBERT
-3. **Analisis Mendalam**: Klik "Analisis" untuk analisis faktor oleh Gemini
-4. **Tanya Pertanyaan**: Gunakan chat untuk mendapatkan insight lebih
-5. **Review Riwayat**: Akses sesi sebelumnya dari sidebar
-
-## 🔧 Konfigurasi
-
-### Model Configuration
-- **DistilBERT Model**: Set `MODEL_PATH` ke model fine-tuned Anda
-- **Gemini Model**: Menggunakan `gemini-2.0-flash` untuk respons cepat
-
-### Supabase Configuration
-- Update `SUPABASE_URL` dan `SUPABASE_KEY` di environment
-- Pastikan kebijakan RLS dikonfigurasi jika diperlukan
-
-## 🐛 Troubleshooting
-
-### Masalah Umum
-
-1. **Model Gagal Load**
-   - Cek `MODEL_PATH`是否存在
-   - Verifikasi instalasi transformers
-
-2. **Error Gemini API**
-   - Validasi API key di Google AI Studio
-   - Cek batas quota
-
-3. **Koneksi Supabase Gagal**
-   - Verifikasi tabel database ada
-   - Cek kredensial koneksi
-
-4. **Error CORS**
-   - Pastikan backend mengizinkan origin frontend
-   - Cek console browser untuk error
-
-### Debug Mode
-
-Aktifkan debug logging dengan environment variable:
-```bash
-export LOG_LEVEL=DEBUG
-```
-
-## 🚀 Deployment
-
-### Production Deployment
-
-1. **Backend**: Deploy ke services seperti:
-   - AWS EC2/Lambda
-   - Google Cloud Run
-   - Heroku
-   - DigitalOcean App Platform
-
-2. **Frontend**: Serve via:
-   - Nginx
-   - Vercel
-   - Netlify
-
-3. **Database**: Gunakan instance Supabase production
-
-### Environment Variables untuk Production
-
-```env
-MODEL_PATH=your/production/model
-GEMINI_API_KEY=your_production_gemini_key
-SUPABASE_URL=your_production_supabase_url
-SUPABASE_KEY=your_production_supabase_key
-LOG_LEVEL=INFO
-```
-
-## 📝 Lisensi
-
-Proyek ini menggunakan lisensi MIT - lihat file [LICENSE](LICENSE) untuk detail.
-
-## 🙏 Acknowledgments
-
-- [Hugging Face](https://huggingface.co) untuk library Transformers
-- [Google AI](https://ai.google.dev) untuk model Gemini
-- [Supabase](https://supabase.com) untuk layanan backend
-- [FastAPI](https://fastapi.tiangolo.com) untuk web framework
-- [Chart.js](https://chartjs.org) untuk visualisasi data
+Buka `http://localhost:4000` → otomatis serve `frontend/index.html`.
 
 ---
 
-**Catatan**: Proyek ini untuk tujuan edukasi dan penelitian. Selalu verifikasi informasi melalui berbagai sumber kredibel.
+## 🐳 Deployment dengan Docker
+
+### Build image
+
+```bash
+docker build -t fnd-app:latest .
 ```
+
+### Run container (port 4000)
+
+```bash
+docker run -d --name fnd \
+  --restart unless-stopped \
+  --env-file .env \
+  -p 4000:4000 \
+  fnd-app:latest \
+  uvicorn backend.main:app --host 0.0.0.0 --port 4000
+```
+
+Akses via:
+👉 `http://your-server-ip:4000`
+
+---
+
+## 📊 Supabase Schema
+
+```sql
+create table sessions (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamp with time zone default now(),
+  title text,
+  source_text text
+);
+
+create table predictions (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamp with time zone default now(),
+  session_id uuid references sessions(id) on delete cascade,
+  text text,
+  label text,
+  score float8,
+  model_version text
+);
+
+create table analyses (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamp with time zone default now(),
+  session_id uuid references sessions(id) on delete cascade,
+  summary text,
+  factors jsonb,
+  chart jsonb,
+  tips jsonb
+);
+
+create table chats (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamp with time zone default now(),
+  session_id uuid references sessions(id) on delete cascade,
+  role text check (role in ('user','assistant')),
+  message text
+);
+```
+
+---
+
+## 📸 Screenshots
+
+* Input berita → Prediksi DistilBERT
+* Analisis lanjutan Gemini
+* Chat interaktif dengan LLM
+* Riwayat & visualisasi faktor klasifikasi
+
+---
+
+## 🚀 Roadmap
+
+* [x] Integrasi DistilBERT
+* [x] Analisis dengan Gemini
+* [x] Supabase untuk riwayat
+* [x] Chat interaktif LLM
+* [x] Docker deployment
+* [ ] Tambah opsi multi-model (RoBERTa, BERT)
+* [ ] Integrasi autentikasi user
+* [ ] Deploy HTTPS dengan reverse proxy (Caddy/Nginx)
+
+---
+
+## 👨‍💻 Kontributor
+
+* **Farhan Ramadhan** (Lead Dev / Data Scientist)
+* Open for collaboration! 🚀
+
+---
+
