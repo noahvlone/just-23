@@ -1,4 +1,3 @@
-```markdown
 # 📰 Fake News Detector (DistilBERT + Gemini)
 
 Proyek ini adalah sistem deteksi berita palsu berbasis **Deep Learning** (DistilBERT) yang dikombinasikan dengan **Large Language Model (LLM) Gemini** untuk memberikan analisis lanjutan dan alasan klasifikasi.  
