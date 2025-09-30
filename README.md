@@ -1,5 +1,3 @@
-Oke bro, gue bikinin draft **README.md** buat GitHub repo lo. Ini udah format standar open source + gampang dibaca sama orang lain.
-
 ---
 
 ```markdown
@@ -33,9 +31,8 @@ Frontend dibangun dengan **HTML/CSS/JavaScript**, Backend dengan **FastAPI**, da
 ---
 
 ## 📂 Struktur Project
-```
 
-.
+
 ├── backend/                 # FastAPI backend (main.py, routers, model loading, LLM handler)
 ├── frontend/                # HTML, CSS, JS (index.html, style, charts, chat UI)
 ├── fake_news_detector_distilbert/  # Fine-tuned DistilBERT model (local folder)
@@ -43,7 +40,7 @@ Frontend dibangun dengan **HTML/CSS/JavaScript**, Backend dengan **FastAPI**, da
 ├── Dockerfile               # Build backend + frontend in one container
 ├── README.md
 
-````
+
 
 ---
 
