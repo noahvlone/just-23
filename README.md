@@ -13,7 +13,6 @@ Frontend dibangun dengan **HTML/CSS/JavaScript**, Backend dengan **FastAPI**, da
 - **Riwayat (History)** → semua sesi, prediksi, analisis, dan chat disimpan di **Supabase (PostgreSQL)**.
 - **Visualisasi** → confidence score, faktor LLM, chart bobot, dan riwayat analisis.
 - **Frontend Interaktif** → dark/light mode, dashboard responsif, history panel.
-- **Deployable** → dengan **Docker** jadi bisa jalan di server tanpa buka terminal terus.
 
 ---
 
@@ -32,7 +31,8 @@ Frontend dibangun dengan **HTML/CSS/JavaScript**, Backend dengan **FastAPI**, da
 
 ├── backend/                 
 ├── frontend/              
-├── fake_news_detector_distilbert/ 
+├── fake_news_detector_distilbert/
+
 ├── requirements.txt         
 ├── Dockerfile               
 ├── README.md
