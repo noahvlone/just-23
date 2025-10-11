@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,204 +11,208 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.46.1/dist/umd/supabase.min.js"></script>
   <style>
     :root {
-      --bg: #0b0f14; --panel:#0f1520; --muted:#9aa4b2; --text:#e6edf3; --primary:#6ee7b7; --accent:#60a5fa; --danger:#f87171; --warn:#fbbf24; --ok:#34d399;
+      --bg:#0b0f14; --panel:#0f1520; --muted:#9aa4b2; --text:#e6edf3; --primary:#6ee7b7; --accent:#60a5fa; --danger:#f87171; --warn:#fbbf24; --ok:#34d399;
       --card:#111827; --border:#223042; --chip:#1f2937;
     }
     .light {
       --bg:#f8fafc; --panel:#ffffff; --muted:#475569; --text:#0f172a; --primary:#059669; --accent:#2563eb; --danger:#dc2626; --warn:#d97706; --ok:#16a34a;
       --card:#ffffff; --border:#e2e8f0; --chip:#f1f5f9;
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body { margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"; background:var(--bg); color:var(--text); }
-    a { color: var(--accent); text-decoration: none; }
-    header { position: sticky; top:0; z-index:10; backdrop-filter: blur(8px); background: linear-gradient(180deg, color-mix(in oklab, var(--panel), transparent 25%), transparent); border-bottom:1px solid var(--border); }
-    .container { max-width: 1200px; margin:0 auto; padding: 16px; }
-    .row { display:flex; gap:16px; }
-    .col { flex:1; }
-    .card { background: var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow: 0 6px 24px rgba(0,0,0,.2); }
-    .title { font-weight:700; font-size:20px; margin:0 0 8px; }
-    .subtitle { color: var(--muted); font-size: 13px; }
-    textarea { width:100%; min-height: 140px; padding:12px; border-radius:12px; border:1px solid var(--border); background: var(--panel); color:var(--text); font: inherit; resize: vertical; }
-    input[type="text"] { width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background: var(--panel); color:var(--text); font: inherit; }
-    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid var(--border); background: var(--chip); color:var(--text); cursor:pointer; font-weight:600; }
-    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--primary)); color:#081017; border: none; }
-    .btn.ghost { background: transparent; }
-    .btn.danger { background: var(--danger); color: white; border: none; }
-    .btn:disabled { opacity:.6; cursor:not-allowed; }
-    .toolbar { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
-    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; font-size:12px; border-radius:999px; background: var(--chip); border:1px solid var(--border); color:var(--muted); }
-    .label { font-size:12px; color:var(--muted); }
-    .pred-badge { font-weight:700; padding:6px 10px; border-radius:999px; }
-    .pred-FAKE { background: color-mix(in oklab, var(--danger), transparent 80%); color: var(--danger); }
-    .pred-REAL { background: color-mix(in oklab, var(--ok), transparent 80%); color: var(--ok); }
-    .grid { display:grid; gap:16px; grid-template-columns: 1.1fr .9fr; }
-    .split { display:grid; gap:16px; grid-template-columns: 1fr; }
-    .history { max-height: 520px; overflow:auto; display:flex; flex-direction:column; gap:8px; }
-    .history-item { border:1px solid var(--border); padding:12px; border-radius:12px; background: var(--panel); cursor:pointer; }
-    .history-item:hover { border-color: var(--accent); }
-    .muted { color: var(--muted); }
-    .chat { display:flex; flex-direction:column; gap:12px; max-height: 420px; overflow:auto; }
-    .bubble { padding:12px; border-radius:14px; max-width: 85%; }
-    .bubble.user { background: var(--accent); color: white; align-self:flex-end; }
-    .bubble.assistant { background: var(--panel); border:1px solid var(--border); }
-    .chat-bubble { margin: 5px; padding: 10px; border-radius: 12px; max-width: 80%; }
-    .chat-bubble.user { background: var(--primary); color: white; align-self: flex-end; }
-    .chat-bubble.llm { background: var(--card); color: var(--text); align-self: flex-start; }
-    .footer { padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; }
-    .chip-row { display:flex; flex-wrap: wrap; gap:8px; }
-    .switch { position: relative; display:inline-block; width: 46px; height: 26px; }
-    .switch input { opacity:0; width:0; height:0; }
-    .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#334155; transition:.2s; border-radius:999px; }
-    .slider:before { position:absolute; content:""; height: 20px; width:20px; left:3px; top:3px; background:white; transition:.2s; border-radius:50%; }
-    input:checked + .slider { background: #fbbf24; }
-    input:checked + .slider:before { transform: translateX(20px); }
-    .table { width:100%; border-collapse: collapse; font-size: 14px; }
-    .table th, .table td { border-bottom:1px solid var(--border); padding:8px; text-align:left; }
-    .empty { border:1px dashed var(--border); padding:12px; border-radius:12px; color:var(--muted); }
-    @media (max-width: 1024px){ .grid { grid-template-columns: 1fr; } }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--text)}
+    a{color:var(--accent);text-decoration:none}
+
+    /* Header */
+    header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg, color-mix(in oklab, var(--panel), transparent 25%), transparent);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+    .container{max-width:1200px;margin:0 auto;padding:14px 16px}
+    .row{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--primary))}
+    .subtitle{color:var(--muted);font-size:13px}
+    .toolbar{display:flex;gap:8px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--chip);color:var(--text);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--primary));color:#081017;border:none}
+    .btn.ghost{background:transparent}
+    .btn.danger{background:var(--danger);color:#fff;border:none}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .icon-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;border:1px solid var(--border);background:var(--chip);cursor:pointer}
+
+    /* Layout */
+    main{max-width:1200px;margin:0 auto;padding:16px}
+    .grid{display:grid;gap:16px;grid-template-columns: 1.1fr .9fr}
+    @media (max-width:1024px){ .grid{grid-template-columns:1fr} }
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+    .title{font-weight:700;font-size:18px;margin:0 0 6px}
+    .muted{color:var(--muted)}
+    textarea{width:100%;min-height:140px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font:inherit;resize:vertical}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;font-size:12px;border-radius:999px;background:var(--chip);border:1px solid var(--border);color:var(--muted)}
+    .pred-badge{font-weight:700;padding:6px 10px;border-radius:999px}
+    .pred-FAKE{background:color-mix(in oklab, var(--danger), transparent 80%);color:var(--danger)}
+    .pred-REAL{background:color-mix(in oklab, var(--ok), transparent 80%);color:var(--ok)}
+    .chip-row{display:flex;flex-wrap:wrap;gap:8px}
+
+    /* Chat */
+    .chat{display:flex;flex-direction:column;gap:12px;max-height:420px;overflow:auto;padding:8px 0}
+    .bubble{padding:12px;border-radius:14px;max-width:85%;word-wrap:break-word}
+    .bubble.user{background:var(--accent);color:#fff;align-self:flex-end}
+    .bubble.assistant{background:var(--panel);border:1px solid var(--border);align-self:flex-start}
+    .typing{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--muted);margin:0 2px;animation:typing 1.4s infinite ease-in-out}
+    .typing:nth-child(2){animation-delay:.2s}.typing:nth-child(3){animation-delay:.4s}
+    @keyframes typing{0%,60%,100%{transform:scale(1);opacity:.5}30%{transform:scale(1.2);opacity:1}}
+    .footer{padding:12px;border-top:1px solid var(--border);display:flex;gap:8px}
+    input[type="text"]{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text);font:inherit}
+
+    /* Factors table & chart */
+    .table{width:100%;border-collapse:collapse;font-size:14px}
+    .table th,.table td{border-bottom:1px solid var(--border);padding:8px;text-align:left}
+    .empty{border:1px dashed var(--border);padding:12px;border-radius:12px;color:var(--muted);text-align:center}
+
+    /* Drawer (sidebar history) */
+    .drawer{position:fixed;inset:0;pointer-events:none;z-index:30}
+    .drawer .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:.2s}
+    .drawer .panel{position:absolute;left:0;top:0;bottom:0;width:320px;background:var(--panel);border-right:1px solid var(--border);transform:translateX(-100%);transition:.25s;padding:16px 12px;box-shadow:8px 0 24px rgba(0,0,0,.25)}
+    .drawer-open .drawer{pointer-events:auto}
+    .drawer-open .drawer .backdrop{opacity:1}
+    .drawer-open .drawer .panel{transform:translateX(0)}
+    .history{max-height:calc(100vh - 150px);overflow:auto;display:flex;flex-direction:column;gap:8px}
+    .history-item{border:1px solid var(--border);padding:12px;border-radius:12px;background:var(--panel);cursor:pointer}
+    .history-item:hover{border-color:var(--accent)}
+    .drawer h3{margin:6px 6px 8px 6px}
   </style>
 </head>
 <body>
-  <header>
-    <div class="container row" style="align-items:center; justify-content:space-between;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--primary));"></div>
-        <div>
-          <div style="font-weight:800; letter-spacing:.2px;">Fake News Detector</div>
-          <div class="subtitle">DistilBERT prediction · Gemini reasoning · Supabase history</div>
+  <!-- Drawer Sidebar -->
+  <div class="drawer" id="drawer">
+    <div class="backdrop" id="drawerClose"></div>
+    <div class="panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <h3 class="title" style="margin:0">Riwayat</h3>
+        <div style="display:flex;gap:6px">
+          <button id="refreshHistory" class="btn ghost">↻</button>
+          <button id="purgeHistory" class="btn danger">Hapus Session</button>
         </div>
       </div>
-      <div class="toolbar">
-        <span class="label">Theme</span>
-        <label class="switch" title="Toggle light/dark">
-          <input id="themeToggle" type="checkbox" />
-          <span class="slider"></span>
-        </label>
-        <button id="clearAll" class="btn danger" title="Delete all local history & Supabase session">
-          Delete Session
-        </button>
+      <div id="historyList" class="history"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="row">
+        <div class="brand">
+          <button id="burger" class="icon-btn" title="History"><span>☰</span></button>
+          <div class="logo"></div>
+          <div>
+            <div style="font-weight:800;letter-spacing:.2px">Fake News Detector</div>
+            <div class="subtitle">DistilBERT × Gemini × Supabase</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <span class="pill" id="status">Idle</span>
+          <button id="themeBtn" class="icon-btn" title="Toggle theme">🌓</button>
+          <button id="clearAll" class="btn danger">Delete Session</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <main class="container" style="padding-top:20px; padding-bottom:32px;">
+  <main>
     <div class="grid">
-      <!-- Left: Input + Results -->
-      <section class="col split">
-        <div class="card">
-          <h2 class="title">Masukkan teks berita</h2>
-          <p class="subtitle">Paste berita atau tulis ringkasan. Klik <b>Prediksi</b> → kita jalankan DistilBERT → lalu <b>Analisis</b> dengan Gemini. Kamu bisa lanjut <b>tanya</b> ke LLM.</p>
-          <textarea id="newsInput" placeholder="Tulis teks berita di sini..."></textarea>
-          <div class="toolbar" style="margin-top:12px;">
+      <!-- LEFT: Input + Prediction + Analysis -->
+      <section>
+        <div class="card" style="margin-bottom:16px">
+          <h2 class="title" style="font-size:20px">Masukkan Teks Berita</h2>
+          <p class="subtitle">Paste artikel / ringkasan untuk dianalisis.</p>
+          <textarea id="newsInput" placeholder="Ketik atau paste teks berita yang ingin dianalisis..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
             <button id="btnPredict" class="btn primary">⚡ Prediksi (DistilBERT)</button>
-            <button id="btnAnalyze" class="btn" disabled>🧠 Analisis Lanjutan (Gemini)</button>
-            <span id="status" class="pill">Idle</span>
+            <button id="btnAnalyze" class="btn" disabled>🧠 Analisis Mendalam (Gemini)</button>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col card">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
-              <h3 class="title" style="font-size:18px;">Hasil Prediksi</h3>
-              <div id="predBadge" class="pred-badge">—</div>
-            </div>
-            <div class="chip-row" style="margin:8px 0 12px;">
-              <span class="pill">Model: <span id="modelVersion" class="muted" style="margin-left:6px;">—</span></span>
-              <span class="pill">Confidence: <span id="confidence" style="margin-left:6px;">—</span></span>
-              <span class="pill">Waktu: <span id="predTime" style="margin-left:6px;">—</span></span>
-            </div>
-            <div id="predText" class="muted">Belum ada prediksi.</div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <h3 class="title">Hasil Prediksi</h3>
+            <div id="predBadge" class="pred-badge">—</div>
           </div>
-
-          <div class="col card">
-            <h3 class="title" style="font-size:18px;">Analisis LLM</h3>
-            <div id="analysisSummary" class="muted">Belum dianalisis.</div>
-            <div style="margin-top:12px;">
-              <canvas id="factorsChart" height="160"></canvas>
-            </div>
-            <div id="factorsList" style="margin-top:8px;"></div>
+          <div class="chip-row" style="margin:6px 0 12px">
+            <span class="pill">Model: <span id="modelVersion" class="muted" style="margin-left:6px">—</span></span>
+            <span class="pill">Confidence: <span id="confidence" style="margin-left:6px">—</span></span>
+            <span class="pill">Waktu: <span id="predTime" style="margin-left:6px">—</span></span>
           </div>
+          <div id="predText" class="muted">Belum ada prediksi.</div>
         </div>
 
         <div class="card">
-          <h3 class="title" style="font-size:18px;">Tanya LLM</h3>
-          <div class="chat" id="chatBox"></div>
-          <div class="footer">
-            <input id="chatInput" type="text" placeholder="Tanyakan apa pun tentang hasil di atas..." />
-            <button id="btnSend" class="btn primary">Kirim</button>
+          <h3 class="title">Analisis LLM</h3>
+          <div id="analysisSummary" class="muted">Belum dianalisis.</div>
+          <div style="margin-top:12px">
+            <canvas id="factorsChart" height="180"></canvas>
           </div>
+          <div id="factorsList" style="margin-top:8px"></div>
         </div>
       </section>
 
-      <!-- Right: History -->
-      <aside class="col card">
-        <h3 class="title" style="font-size:18px;">Riwayat</h3>
-        <div class="toolbar" style="margin-bottom:12px;">
-          <button id="refreshHistory" class="btn ghost">↻ Refresh</button>
-          <button id="purgeHistory" class="btn danger">Hapus dari Supabase</button>
+      <!-- RIGHT: Chat -->
+      <aside>
+        <div class="card" style="min-height:540px;display:flex;flex-direction:column">
+          <h3 class="title">Tanya AI</h3>
+          <div class="chat" id="chatBox" style="flex:1"></div>
+          <div class="footer">
+            <input id="chatInput" type="text" placeholder="Tanyakan sesuatu..." />
+            <button id="btnSend" class="btn primary" title="Kirim">➤</button>
+          </div>
         </div>
-        <div id="historyList" class="history"></div>
       </aside>
     </div>
 
-    <section class="container" style="margin-top:24px;">
+    <!-- Factors Table (below) -->
+    <section style="margin-top:16px">
       <div class="card">
-        <h3 class="title" style="font-size:18px;">Alasan Klasifikasi (LLM Factors)</h3>
+        <h3 class="title">Alasan Klasifikasi (LLM Factors)</h3>
         <table class="table">
-          <thead>
-            <tr><th>Faktor</th><th>Bobot</th><th>Penjelasan</th></tr>
-          </thead>
-          <tbody id="factorsTableBody">
-            <tr><td colspan="3" class="empty">Belum ada data.</td></tr>
-          </tbody>
+          <thead><tr><th>Faktor</th><th>Bobot</th><th>Penjelasan</th></tr></thead>
+          <tbody id="factorsTableBody"><tr><td colspan="3" class="empty">Belum ada data.</td></tr></tbody>
         </table>
       </div>
     </section>
   </main>
 
 <script type="module">
-  // ========================
-  // 🔧 CONFIG (TODO: update)
-  // ========================
-  const BACKEND_BASE_URL = localStorage.getItem('BACKEND_BASE_URL') || 'http://0.0.0.0:4000';
-  const SUPABASE_URL = 'ISI_URL_KAMU'; // TODO
-  const SUPABASE_ANON_KEY = 'ISI_KEY_KAMU'; // TODO
-
-  // Persist backend URL override via console: localStorage.setItem('BACKEND_BASE_URL', 'http://host:port')
-
-  // ========================
-  // 📦 Supabase Client
-  // ========================
+  /* ========================
+   * CONFIG
+   * ====================== */
+  const BACKEND_BASE_URL = localStorage.getItem('BACKEND_BASE_URL') || 'http://82.197.71.171:4000';
+  const SUPABASE_URL = 'ISI_URL_KAMU';
+  const SUPABASE_ANON_KEY = 'ISI_ANON_KEY_KAMU';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Ensure tables exist (optional safety check; comment out in prod if policies disallow)
-  async function ensureSchemaNote(){
-    try {
-      // no-op; schema should be created via SQL. This is just a gentle console note.
-      console.info('[Schema] Ensure you ran the SQL at the top of this file in Supabase SQL editor.');
-    } catch (e) { console.warn('Schema check skipped:', e.message); }
-  }
+  /* ========================
+   * THEME + DRAWER
+   * ====================== */
+  const themeBtn = document.getElementById('themeBtn');
+  const burger = document.getElementById('burger');
+  const drawer = document.getElementById('drawer');
+  const drawerClose = document.getElementById('drawerClose');
 
-  // ========================
-  // 🎨 Theme Persistence
-  // ========================
-  const themeToggle = document.getElementById('themeToggle');
   const savedTheme = localStorage.getItem('theme') || 'dark';
-  if (savedTheme === 'light') {
-    document.documentElement.classList.add('light');
-    themeToggle.checked = true;
-  }
-  themeToggle.addEventListener('change', () => {
-    const light = themeToggle.checked;
+  if (savedTheme === 'light') document.documentElement.classList.add('light');
+  themeBtn.onclick = () => {
+    const light = !document.documentElement.classList.contains('light');
     document.documentElement.classList.toggle('light', light);
     localStorage.setItem('theme', light ? 'light' : 'dark');
     redrawChart();
-  });
+  };
 
-  // ========================
-  // 🧠 UI Elements
-  // ========================
+  burger.onclick = () => document.body.classList.add('drawer-open');
+  drawerClose.onclick = () => document.body.classList.remove('drawer-open');
+
+  /* ========================
+   * ELEMENTS
+   * ====================== */
   const newsInput = document.getElementById('newsInput');
   const btnPredict = document.getElementById('btnPredict');
   const btnAnalyze = document.getElementById('btnAnalyze');
@@ -231,62 +235,58 @@
 
   let currentSessionId = localStorage.getItem('session_id');
   let chartInstance = null;
+  let isStreaming = false;
 
-  function setStatus(text){ statusPill.textContent = text; }
-  
-  function addChatBubble(sender, text){
-    const div = document.createElement("div");
-    div.className = sender === "user" ? "chat-bubble user" : "chat-bubble llm";
+  const setStatus = (t)=> statusPill.textContent = t;
+
+  /* ========================
+   * UTIL
+   * ====================== */
+  function escapeHTML(s=''){return s.replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function addChatBubble(role, text){
+    const div = document.createElement('div');
+    div.className = `bubble ${role}`;
     div.textContent = text;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  
   function setPredictionUI(pred){
-    if(!pred) return;
     predBadge.textContent = pred.label || '—';
     predBadge.className = `pred-badge pred-${pred.label || ''}`;
     modelVersion.textContent = pred.model_version || 'distilbert-finetuned';
-    confidenceEl.textContent = pred.score != null ? (Number(pred.score)*100).toFixed(1) + '%' : '—';
+    confidenceEl.textContent = pred.score != null ? (Number(pred.score)*100).toFixed(1)+'%' : '—';
     predTime.textContent = pred.timestamp ? new Date(pred.timestamp).toLocaleString() : new Date().toLocaleString();
-    predText.textContent = newsInput.value.slice(0, 220) + (newsInput.value.length > 220 ? '…' : '');
+    predText.textContent = newsInput.value.slice(0,220) + (newsInput.value.length>220?'…':'');
   }
 
-  function renderFactors(list = []){
+  function renderFactors(list=[]){
     factorsList.innerHTML = '';
     factorsTableBody.innerHTML = '';
     if(!list.length){
       factorsTableBody.innerHTML = '<tr><td colspan="3" class="empty">Belum ada data.</td></tr>';
       return;
     }
-    list.forEach(f => {
+    list.forEach(f=>{
       const chip = document.createElement('span');
       chip.className = 'pill';
       chip.textContent = `${f.name} • ${(f.weight*100).toFixed(0)}%`;
       factorsList.appendChild(chip);
     });
-    list.forEach(f => {
+    list.forEach(f=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${escapeHTML(f.name)}</td><td>${(f.weight*100).toFixed(1)}%</td><td>${escapeHTML(f.explanation || '-')}`;
+      tr.innerHTML = `<td>${escapeHTML(f.name)}</td><td>${(f.weight*100).toFixed(1)}%</td><td>${escapeHTML(f.explanation||'-')}</td>`;
       factorsTableBody.appendChild(tr);
     });
   }
 
-  function escapeHTML(s=''){ return s.replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m])); }
-
-  function pushChat(rle, message){
-    const div = document.createElement('div');
-    div.className = `bubble ${role}`;
-    div.innerHTML = escapeHTML(message);
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
+  /* ========================
+   * Supabase helpers
+   * ====================== */
   async function createSessionIfNeeded(){
     if(currentSessionId) return currentSessionId;
     const text = newsInput.value.trim();
-    const title = (text.split('.').shift() || 'Untitled').slice(0, 60);
+    const title = (text.split('.').shift() || 'Untitled').slice(0,60);
     const { data, error } = await supabase.from('sessions').insert({ title, source_text: text }).select('id').single();
     if(error) throw error;
     currentSessionId = data.id;
@@ -296,20 +296,19 @@
 
   async function savePrediction(pred){
     if(!currentSessionId) await createSessionIfNeeded();
-    const payload = {
+    await supabase.from('predictions').insert({
       session_id: currentSessionId,
       text: newsInput.value.trim(),
-      label: pred.label,
-      score: pred.score,
-      model_version: pred.model_version || 'distilbert-finetuned'
-    };
-    await supabase.from('predictions').insert(payload);
+      label: pred.label, score: pred.score, model_version: pred.model_version||'distilbert-finetuned'
+    });
   }
 
   async function saveAnalysis(analysis){
     if(!currentSessionId) await createSessionIfNeeded();
-    const payload = { session_id: currentSessionId, summary: analysis.summary, factors: analysis.factors || [], chart: analysis.chart || {}, tips: analysis.tips || [] };
-    await supabase.from('analyses').insert(payload);
+    await supabase.from('analyses').insert({
+      session_id: currentSessionId,
+      summary: analysis.summary, factors: analysis.factors||[], chart: analysis.chart||{}, tips: analysis.tips||[]
+    });
   }
 
   async function saveChat(role, message){
@@ -317,190 +316,170 @@
     await supabase.from('chats').insert({ session_id: currentSessionId, role, message });
   }
 
-  // ========================
-  // 📊 Chart.js
-  // ========================
+  /* ========================
+   * CHART
+   * ====================== */
   const ctx = document.getElementById('factorsChart');
-  function redrawChart(){ if(chartInstance){ chartInstance.update(); } }
   function renderChart(labels=[], weights=[]){
     const border = getComputedStyle(document.documentElement).getPropertyValue('--border');
-    if(chartInstance){ chartInstance.destroy(); }
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text');
+    if(chartInstance) chartInstance.destroy();
     chartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: { labels, datasets: [{ label: 'Faktor Bobot', data: weights }] },
-      options: {
-        responsive:true,
-        plugins: { legend: { display:false } },
-        scales: {
-          x: { grid: { color: border } },
-          y: { beginAtZero:true, grid: { color: border } }
+      type:'bar',
+      data:{ labels, datasets:[{label:'Faktor Bobot', data:weights}] },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:border}, ticks:{color:textColor}},
+          y:{beginAtZero:true,max:1,grid:{color:border},ticks:{color:textColor,callback:v=>(v*100).toFixed(0)+'%'}}
         }
       }
     });
   }
+  function redrawChart(){ if(chartInstance) chartInstance.update('none'); }
 
-  // ========================
-  // 🚀 Actions
-  // ========================
-  btnPredict.addEventListener('click', async () => {
+  /* ========================
+   * ACTIONS
+   * ====================== */
+  btnPredict.onclick = async ()=>{
     const text = newsInput.value.trim();
-    if(!text){ alert('Isi dulu teks beritanya.'); return; }
-    try {
-      setStatus('Predicting…');
-      btnPredict.disabled = true;
+    if(!text) return alert('Isi dulu teks beritanya.');
+    try{
+      setStatus('Predicting…'); btnPredict.disabled = true;
       await createSessionIfNeeded();
-      const res = await fetch(`${BACKEND_BASE_URL}/api/predict`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text }) });
+      const res = await fetch(`${BACKEND_BASE_URL}/api/predict`,{
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text})
+      });
       if(!res.ok) throw new Error('Predict API error');
       const pred = await res.json();
       setPredictionUI(pred);
       await savePrediction(pred);
-      setStatus('Prediction complete');
       btnAnalyze.disabled = false;
+      setStatus('Prediction complete');
       await loadHistory();
-    } catch (e){
-      console.error(e);
-      setStatus('Prediction failed');
-      alert('Gagal prediksi. Cek backend /api/predict & CORS.');
-    } finally { btnPredict.disabled = false; }
-  });
+    }catch(e){ console.error(e); setStatus('Prediction failed'); alert('Gagal prediksi. Cek backend.'); }
+    finally{ btnPredict.disabled = false; }
+  };
 
-  btnAnalyze.addEventListener('click', async () => {
+  btnAnalyze.onclick = async ()=>{
     const text = newsInput.value.trim();
-    if(!text){ alert('Isi dulu teks beritanya.'); return; }
     const label = predBadge.textContent;
-    if(label === '—'){ alert('Jalankan Prediksi dulu.'); return; }
-    try {
-      setStatus('Analyzing…');
-      btnAnalyze.disabled = true;
-      const res = await fetch(`${BACKEND_BASE_URL}/api/analyze`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text, prediction: { label, score: parseFloat(confidenceEl.textContent)||null } }) });
+    if(!text) return alert('Isi dulu teks beritanya.');
+    if(label==='—') return alert('Jalankan Prediksi dulu.');
+    try{
+      setStatus('Analyzing…'); btnAnalyze.disabled = true;
+      const res = await fetch(`${BACKEND_BASE_URL}/api/analyze`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({text, prediction:{label, score: parseFloat(confidenceEl.textContent)/100 || 0.5}})
+      });
       if(!res.ok) throw new Error('Analyze API error');
       const analysis = await res.json();
-      analysisSummary.textContent = analysis.summary || '—';
-      const factors = analysis.factors || [];
+      analysisSummary.textContent = (analysis.summary||'—').replace(/```[^`]*```/g,'').trim();
+      const factors = analysis.factors||[];
       renderFactors(factors);
       const labels = analysis.chart?.labels || factors.map(f=>f.name);
       const weights = analysis.chart?.weights || factors.map(f=>f.weight);
       renderChart(labels, weights);
       await saveAnalysis(analysis);
-      await loadHistory();
       setStatus('Analysis complete');
-    } catch (e){
-      console.error(e);
-      setStatus('Analysis failed');
-      alert('Gagal analisis. Cek backend /api/analyze & CORS.');
-    } finally { btnAnalyze.disabled = false; }
-  });
+      await loadHistory();
+    }catch(e){ console.error(e); setStatus('Analysis failed'); alert('Gagal analisis. Cek backend /api/analyze.'); }
+    finally{ btnAnalyze.disabled=false; }
+  };
 
-  btnSend.addEventListener('click', sendChat);
-  chatInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendChat(); } });
+  btnSend.onclick = sendChat;
+  chatInput.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendChat(); } });
 
   async function sendChat(){
-    const message = chatInput.value.trim();
-    if(!message) return;
-
-    addChatBubble("user", msg);
-    chatInput.value = "";
-    
+    const message = chatInput.value.trim(); if(!message) return;
+    addChatBubble('user', message); chatInput.value=''; btnSend.disabled=true; setStatus('Chatting…');
     const context = {
-      prediction: { label: predBadge.textContent, score: confidenceEl.textContent },
-      analysis: { summary: analysisSummary.textContent }
+      prediction:{label: predBadge.textContent, score: parseFloat(confidenceEl.textContent)/100 || 0},
+      analysis:{summary: analysisSummary.textContent},
+      text: newsInput.value.trim()
     };
-
-    pushChat('user', message);
     await saveChat('user', message);
-
-    try {
-      setStatus('Chatting…');
-      btnSend.disabled = true;
-      const label = predBadge.textContent;
-      const context = { text: newsInput.value.trim(), prediction: { label, score: confidenceEl.textContent }, analysis: { summary: analysisSummary.textContent } };
-      const res = await fetch(`${BACKEND_BASE_URL}/api/chat`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: msg, context }) });
+    try{
+      const res = await fetch(`${BACKEND_BASE_URL}/api/chat`,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ message, context, session_id: currentSessionId })
+      });
       if(!res.ok) throw new Error('Chat API error');
       const data = await res.json();
-      const { reply } = await res.json();
-      addChatBubble("llm", data.reply || "—");
-      pushChat('assistant', reply || '(no reply)');
-      await saveChat('assistant', reply || '');
+      const reply = data.reply || '—';
+      addChatBubble('assistant', reply);
+      await saveChat('assistant', reply);
       await loadHistory();
       setStatus('Idle');
-    } catch (e){
-      console.error(e);
-      setStatus('Chat failed');
-      alert('Gagal chat. Cek backend /api/chat & CORS.');
-    } finally { btnSend.disabled = false; }
+    }catch(e){ console.error(e); addChatBubble('assistant','⚠️ Gagal tanya LLM.'); setStatus('Chat failed'); }
+    finally{ btnSend.disabled=false; }
   }
 
-  clearAll.addEventListener('click', async ()=>{
+  clearAll.onclick = async ()=>{
     if(!currentSessionId){ localStorage.removeItem('session_id'); location.reload(); return; }
-    if(!confirm('Hapus session lokal saja? (Supabase tetap)')) return;
-    localStorage.removeItem('session_id');
-    location.reload();
-  });
+    if(!confirm('Hapus session lokal? (Supabase tetap)')) return;
+    localStorage.removeItem('session_id'); location.reload();
+  };
 
-  purgeHistory.addEventListener('click', async ()=>{
-    if(!currentSessionId) { alert('Tidak ada session untuk dihapus.'); return; }
-    const ok = confirm('Hapus session ini dari Supabase juga? (semua prediksi, analisis, chat)');
-    if(!ok) return;
-    try{
-      await supabase.from('sessions').delete().eq('id', currentSessionId);
-      localStorage.removeItem('session_id');
-      location.reload();
-    }catch(e){ alert('Gagal hapus di Supabase: '+e.message); }
-  });
+  purgeHistory.onclick = async ()=>{
+    if(!currentSessionId) return alert('Tidak ada session aktif.');
+    if(!confirm('Hapus session ini dari Supabase juga?')) return;
+    try{ await supabase.from('sessions').delete().eq('id', currentSessionId); localStorage.removeItem('session_id'); location.reload(); }
+    catch(e){ alert('Gagal hapus di Supabase: '+e.message); }
+  };
 
-  refreshHistory.addEventListener('click', loadHistory);
+  refreshHistory.onclick = loadHistory;
 
   async function loadHistory(){
     historyList.innerHTML = '<div class="muted">Loading…</div>';
-    let { data: sessions, error } = await supabase.from('sessions').select('id, created_at, title').order('created_at', { ascending: false }).limit(50);
+    const { data:sessions, error } = await supabase.from('sessions').select('id, created_at, title').order('created_at',{ascending:false}).limit(50);
     if(error){ historyList.innerHTML = '<div class="muted">Gagal load history.</div>'; return; }
     if(!sessions?.length){ historyList.innerHTML = '<div class="empty">Belum ada sesi tersimpan.</div>'; return; }
     historyList.innerHTML = '';
-    sessions.forEach(s => {
+    sessions.forEach(s=>{
       const d = new Date(s.created_at).toLocaleString();
       const div = document.createElement('div');
-      div.className = 'history-item';
-      div.innerHTML = `<div style="font-weight:600;">${escapeHTML(s.title || 'Untitled')}</div><div class="muted" style="font-size:12px;">${d} · ${s.id.slice(0,8)}</div>`;
+      div.className='history-item';
+      div.innerHTML = `<div style="font-weight:600">${escapeHTML(s.title||'Untitled')}</div><div class="muted" style="font-size:12px">${d} · ${s.id.slice(0,8)}</div>`;
       div.onclick = async ()=>{
         currentSessionId = s.id; localStorage.setItem('session_id', currentSessionId);
-        await hydrateFromSession(s.id);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.body.classList.remove('drawer-open');
+        await hydrateFromSession(s.id); window.scrollTo({top:0,behavior:'smooth'});
       };
       historyList.appendChild(div);
     });
   }
 
   async function hydrateFromSession(id){
-    // Load last prediction
-    const { data: preds } = await supabase.from('predictions').select('*').eq('session_id', id).order('created_at', { ascending:false }).limit(1);
-    if(preds && preds.length){
+    // prediction
+    const { data: preds } = await supabase.from('predictions').select('*').eq('session_id', id).order('created_at',{ascending:false}).limit(1);
+    if(preds?.length){
       const p = preds[0];
-      setPredictionUI({ label:p.label, score:p.score, model_version:p.model_version, timestamp: p.created_at });
-      newsInput.value = p.text || '';
+      setPredictionUI({label:p.label, score:p.score, model_version:p.model_version, timestamp:p.created_at});
+      newsInput.value = p.text||'';
       btnAnalyze.disabled = false;
     }
-    // Load last analysis
-    const { data: analyses } = await supabase.from('analyses').select('*').eq('session_id', id).order('created_at', { ascending:false }).limit(1);
-    if(analyses && analyses.length){
+    // analysis
+    const { data: analyses } = await supabase.from('analyses').select('*').eq('session_id', id).order('created_at',{ascending:false}).limit(1);
+    if(analyses?.length){
       const a = analyses[0];
-      analysisSummary.textContent = (analysis.summary || '—').replace(/```[^`]*```/g,'').trim();
-      const factors = Array.isArray(a.factors) ? a.factors : [];
+      analysisSummary.textContent = (a.summary||'—').replace(/```[^`]*```/g,'').trim();
+      const factors = Array.isArray(a.factors)? a.factors : [];
       renderFactors(factors);
       const labels = a.chart?.labels || factors.map(f=>f.name);
       const weights = a.chart?.weights || factors.map(f=>f.weight);
       renderChart(labels, weights);
     }
-    // Load chat
+    // chat
     chatBox.innerHTML = '';
-    const { data: chats } = await supabase.from('chats').select('*').eq('session_id', id).order('created_at', { ascending:true }).limit(200);
-    if(chats){ chats.forEach(c => pushChat(c.role, c.message)); }
+    const { data: chats } = await supabase.from('chats').select('*').eq('session_id', id).order('created_at',{ascending:true}).limit(200);
+    chats?.forEach(c=> addChatBubble(c.role, c.message));
   }
 
-  // Init
   (async function init(){
-    await ensureSchemaNote();
     await loadHistory();
-    if(currentSessionId){ await hydrateFromSession(currentSessionId); }
+    if(currentSessionId) await hydrateFromSession(currentSessionId);
   })();
 </script>
 </body>
